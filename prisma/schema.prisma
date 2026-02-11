@@ -1,0 +1,142 @@
+// Customer Success Dashboard - Prisma Schema
+// Supports time-series analysis and configurable performance thresholds
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Client/location from review platforms
+model Client {
+  id                String          @id @default(cuid())
+  externalId        String          @unique
+  name              String
+  source            ReviewSource    // KIYOH or KLANTENVERTELLEN
+  package           String?
+  features          Json?
+  isActive          Boolean         @default(true)
+
+  // Current cached metrics
+  averageRating     Float?
+  totalReviews      Int             @default(0)
+  responseRate      Float?
+  lastReviewDate    DateTime?
+  reviewsLast30Days Int             @default(0)
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  reviews           Review[]
+  metrics           ClientMetric[]  // Time-series snapshots
+
+  @@index([source, averageRating])
+  @@index([lastReviewDate])
+  @@map("clients")
+}
+
+// Individual reviews
+model Review {
+  id              String        @id @default(cuid())
+  externalId      String        @unique
+  clientId        String
+  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  rating          Float
+  comment         String?
+  reviewerName    String?
+  reviewDate      DateTime
+
+  hasResponse     Boolean       @default(false)
+  responseText    String?
+  responseDate    DateTime?
+
+  source          ReviewSource
+  rawData         Json?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([clientId, reviewDate])
+  @@index([reviewDate])
+  @@map("reviews")
+}
+
+// Time-series metric snapshots for trend analysis
+model ClientMetric {
+  id                  String    @id @default(cuid())
+  clientId            String
+  client              Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  snapshotDate        DateTime  @default(now())
+  averageRating       Float
+  totalReviews        Int
+  newReviewsToday     Int       @default(0)
+  responseRate        Float
+  reviewsLast7Days    Int       @default(0)
+  reviewsLast30Days   Int       @default(0)
+
+  @@unique([clientId, snapshotDate])
+  @@index([clientId, snapshotDate])
+  @@map("client_metrics")
+}
+
+// Configurable thresholds for performance classification
+model Settings {
+  id                        String   @id @default(cuid())
+
+  // Performance thresholds
+  goodPerformerRating       Float    @default(4.5)
+  badPerformerRating        Float    @default(3.0)
+  minimumReviewsRequired    Int      @default(5)
+  needsAttentionDays        Int      @default(30)
+  lowResponseRateThreshold  Float    @default(0.5)
+
+  // Display settings
+  topPerformersCount        Int      @default(3)
+  bottomPerformersCount     Int      @default(3)
+
+  updatedAt                 DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Sync job tracking
+model SyncJob {
+  id                String        @id @default(cuid())
+  source            ReviewSource?
+  status            SyncStatus    @default(RUNNING)
+  startedAt         DateTime      @default(now())
+  completedAt       DateTime?
+  reviewsProcessed  Int           @default(0)
+  clientsProcessed  Int           @default(0)
+  errors            Json?
+
+  @@index([startedAt])
+  @@map("sync_jobs")
+}
+
+enum ReviewSource {
+  KIYOH
+  KLANTENVERTELLEN
+}
+
+enum SyncStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
