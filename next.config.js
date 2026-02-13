@@ -3,10 +3,13 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone',
-  // Disable static optimization to prevent build-time errors
+  // Skip static page generation during build
   experimental: {
-    isrMemoryCacheSize: 0,
+    ppr: false,
   },
+  // Disable all static optimization
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
 }
 
 module.exports = nextConfig
