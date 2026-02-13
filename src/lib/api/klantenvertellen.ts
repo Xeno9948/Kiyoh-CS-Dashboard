@@ -31,10 +31,14 @@ export interface KlantenvertellenReview {
 }
 
 export class KlantenvertellenAPI {
-  private client: AxiosInstance;
+  private client: AxiosInstance | null = null;
 
-  constructor(apiToken?: string) {
-    const token = apiToken || process.env.KLANTENVERTELLEN_API_TOKEN;
+  constructor(private apiToken?: string) { }
+
+  private getClient(): AxiosInstance {
+    if (this.client) return this.client;
+
+    const token = this.apiToken || process.env.KLANTENVERTELLEN_API_TOKEN;
 
     if (!token) {
       throw new Error('KLANTENVERTELLEN_API_TOKEN is not configured');
@@ -48,6 +52,8 @@ export class KlantenvertellenAPI {
       },
       timeout: 30000,
     });
+
+    return this.client;
   }
 
   /**
@@ -57,7 +63,7 @@ export class KlantenvertellenAPI {
     await globalRateLimiter.acquire();
 
     try {
-      const response = await this.client.get('/companies', {
+      const response = await this.getClient().get('/companies', {
         params: {
           limit: 100,
         },
@@ -86,7 +92,7 @@ export class KlantenvertellenAPI {
         params.since = since.toISOString();
       }
 
-      const response = await this.client.get('/reviews', {
+      const response = await this.getClient().get('/reviews', {
         params,
       });
 
@@ -124,7 +130,7 @@ export class KlantenvertellenAPI {
     await globalRateLimiter.acquire();
 
     try {
-      const response = await this.client.get(`/companies/${companyId}`);
+      const response = await this.getClient().get(`/companies/${companyId}`);
       return response.data.company || null;
     } catch (error: any) {
       console.error(`Error fetching Klantenvertellen company ${companyId}:`, error.message);

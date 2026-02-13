@@ -31,10 +31,14 @@ export interface KiyohReview {
 }
 
 export class KiyohAPI {
-  private client: AxiosInstance;
+  private client: AxiosInstance | null = null;
 
-  constructor(apiToken?: string) {
-    const token = apiToken || process.env.KIYOH_API_TOKEN;
+  constructor(private apiToken?: string) { }
+
+  private getClient(): AxiosInstance {
+    if (this.client) return this.client;
+
+    const token = this.apiToken || process.env.KIYOH_API_TOKEN;
 
     if (!token) {
       throw new Error('KIYOH_API_TOKEN is not configured');
@@ -48,6 +52,8 @@ export class KiyohAPI {
       },
       timeout: 30000,
     });
+
+    return this.client;
   }
 
   /**
@@ -57,7 +63,7 @@ export class KiyohAPI {
     await globalRateLimiter.acquire();
 
     try {
-      const response = await this.client.get('/locations', {
+      const response = await this.getClient().get('/locations', {
         params: {
           limit: 100,
         },
@@ -86,7 +92,7 @@ export class KiyohAPI {
         params.since = since.toISOString();
       }
 
-      const response = await this.client.get('/reviews', {
+      const response = await this.getClient().get('/reviews', {
         params,
       });
 
@@ -124,7 +130,7 @@ export class KiyohAPI {
     await globalRateLimiter.acquire();
 
     try {
-      const response = await this.client.get(`/locations/${locationId}`);
+      const response = await this.getClient().get(`/locations/${locationId}`);
       return response.data.location || null;
     } catch (error: any) {
       console.error(`Error fetching Kiyoh location ${locationId}:`, error.message);
