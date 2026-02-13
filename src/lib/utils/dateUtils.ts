@@ -50,11 +50,15 @@ export function formatRelativeTime(date: Date | null | undefined): string {
 export function getDateRange(period: '7d' | '30d' | '90d' | 'custom', customStart?: Date, customEnd?: Date) {
   const end = startOfDay(new Date());
 
-  if (period === 'custom' && customStart && customEnd) {
-    return {
-      start: startOfDay(customStart),
-      end: startOfDay(customEnd),
-    };
+  if (period === 'custom') {
+    if (customStart && customEnd) {
+      return {
+        start: startOfDay(customStart),
+        end: startOfDay(customEnd),
+      };
+    }
+    // Fallback to 30 days if custom dates are missing
+    return { start: daysAgo(30), end };
   }
 
   const daysMap = {
@@ -63,7 +67,7 @@ export function getDateRange(period: '7d' | '30d' | '90d' | 'custom', customStar
     '90d': 90,
   };
 
-  const start = daysAgo(daysMap[period] || 30);
+  const start = daysAgo(daysMap[period]);
 
   return { start, end };
 }

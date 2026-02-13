@@ -5,10 +5,12 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { prisma } from '@/lib/prisma';
 import { analyzeTrend } from '@/lib/utils/trendAnalyzer';
 import { daysSince } from '@/lib/utils/dateUtils';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // Check authentication
@@ -70,17 +72,17 @@ export async function GET(request: Request) {
 
     // Add trends
     const [bestWithTrends, worstWithTrends, needsAttentionWithTrends] = await Promise.all([
-      Promise.all(bestPerformers.map(async (client) => ({
+      Promise.all(bestPerformers.map(async (client: any) => ({
         ...client,
         trend: await analyzeTrend(client.id, 'averageRating', 30, 30),
         daysSinceLastReview: daysSince(client.lastReviewDate),
       }))),
-      Promise.all(worstPerformers.map(async (client) => ({
+      Promise.all(worstPerformers.map(async (client: any) => ({
         ...client,
         trend: await analyzeTrend(client.id, 'averageRating', 30, 30),
         daysSinceLastReview: daysSince(client.lastReviewDate),
       }))),
-      Promise.all(needsAttention.map(async (client) => ({
+      Promise.all(needsAttention.map(async (client: any) => ({
         ...client,
         trend: await analyzeTrend(client.id, 'averageRating', 30, 30),
         daysSinceLastReview: daysSince(client.lastReviewDate),

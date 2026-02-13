@@ -5,10 +5,12 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { prisma } from '@/lib/prisma';
 import { analyzeTrend } from '@/lib/utils/trendAnalyzer';
 import { daysSince } from '@/lib/utils/dateUtils';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // Check authentication
@@ -52,7 +54,7 @@ export async function GET(request: Request) {
 
     // Add trends to clients
     const clientsWithTrends = await Promise.all(
-      clients.map(async (client) => {
+      clients.map(async (client: any) => {
         const trend = await analyzeTrend(client.id, 'averageRating', 30, 30);
         return {
           ...client,

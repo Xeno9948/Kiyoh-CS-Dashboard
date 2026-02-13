@@ -5,10 +5,12 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { prisma } from '@/lib/prisma';
 import { getDateRange } from '@/lib/utils/dateUtils';
 import { format } from 'date-fns';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // Check authentication
@@ -44,7 +46,7 @@ export async function GET(request: Request) {
     });
 
     // Format for charts
-    const timeSeriesData = metrics.map(metric => ({
+    const timeSeriesData = metrics.map((metric: any) => ({
       date: format(metric.snapshotDate, 'MMM d'),
       averageRating: metric.averageRating,
       totalReviews: metric.totalReviews,

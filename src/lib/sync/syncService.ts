@@ -4,6 +4,7 @@
  */
 
 import { prisma } from '../prisma';
+import { Prisma } from '@prisma/client';
 import { kiyohAPI, KiyohLocation, KiyohReview } from '../api/kiyoh';
 import { klantenvertellenAPI, KlantenvertellenCompany, KlantenvertellenReview } from '../api/klantenvertellen';
 import { updateClientMetrics, createMetricSnapshot } from './metricsCalculator';
@@ -12,7 +13,7 @@ export interface SyncResult {
   success: boolean;
   clientsProcessed: number;
   reviewsProcessed: number;
-  errors: string[];
+  errors: string[] | null | Prisma.JsonValue;
 }
 
 /**
@@ -218,7 +219,7 @@ export async function syncAll(): Promise<SyncResult> {
         completedAt: new Date(),
         clientsProcessed: totalClients,
         reviewsProcessed: totalReviews,
-        errors: allErrors.length > 0 ? allErrors : null,
+        errors: allErrors.length > 0 ? allErrors : Prisma.DbNull,
       },
     });
 
