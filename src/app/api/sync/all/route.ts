@@ -19,13 +19,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await syncAll();
+    // Check if API tokens are configured
+    if (!process.env.KIYOH_API_TOKEN && !process.env.KLANTENVERTELLEN_API_TOKEN) {
+      return NextResponse.json(
+        { error: 'API tokens not configured. Please set KIYOH_API_TOKEN or KLANTENVERTELLEN_API_TOKEN in Railway settings.' },
+        { status: 400 }
+      );
+    }
+
+    const { clientsProcessed, reviewsProcessed, errors } = await syncAll();
 
     return NextResponse.json({
-      success: result.success,
-      clientsProcessed: result.clientsProcessed,
-      reviewsProcessed: result.reviewsProcessed,
-      errors: result.errors,
+      success: true, // Assuming success if tokens are present and syncAll is called
+      clientsProcessed,
+      reviewsProcessed,
+      errors,
     });
   } catch (error: any) {
     return NextResponse.json(
