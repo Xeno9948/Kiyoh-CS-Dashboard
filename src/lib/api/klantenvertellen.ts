@@ -60,6 +60,7 @@ export class KlantenvertellenAPI {
    * Fetch all companies (paginated)
    */
   async fetchCompanies(): Promise<KlantenvertellenCompany[]> {
+    console.log('[KlantenvertellenAPI] Fetching companies...');
     await globalRateLimiter.acquire();
 
     try {
@@ -69,9 +70,14 @@ export class KlantenvertellenAPI {
         },
       });
 
-      return response.data.companies || [];
+      const companies = response.data.companies || [];
+      console.log(`[KlantenvertellenAPI] Fetched ${companies.length} companies`);
+      return companies;
     } catch (error: any) {
       console.error('Error fetching Klantenvertellen companies:', error.message);
+      if (error.response) {
+        console.error('[KlantenvertellenAPI] Error response:', JSON.stringify(error.response.data));
+      }
       throw error;
     }
   }
@@ -80,6 +86,7 @@ export class KlantenvertellenAPI {
    * Fetch reviews for a specific company
    */
   async fetchReviewsForCompany(companyId: number, since?: Date): Promise<KlantenvertellenReview[]> {
+    console.log(`[KlantenvertellenAPI] Fetching reviews for company ${companyId}...`);
     await globalRateLimiter.acquire();
 
     try {
@@ -90,15 +97,21 @@ export class KlantenvertellenAPI {
 
       if (since) {
         params.since = since.toISOString();
+        console.log(`[KlantenvertellenAPI] Filtering reviews since ${params.since}`);
       }
 
       const response = await this.getClient().get('/reviews', {
         params,
       });
 
-      return response.data.reviews || [];
+      const reviews = response.data.reviews || [];
+      console.log(`[KlantenvertellenAPI] Fetched ${reviews.length} reviews for company ${companyId}`);
+      return reviews;
     } catch (error: any) {
       console.error(`Error fetching Klantenvertellen reviews for company ${companyId}:`, error.message);
+      if (error.response) {
+        console.error('[KlantenvertellenAPI] Error response:', JSON.stringify(error.response.data));
+      }
       throw error;
     }
   }
@@ -107,6 +120,7 @@ export class KlantenvertellenAPI {
    * Fetch all reviews across all companies
    */
   async fetchAllReviews(since?: Date): Promise<KlantenvertellenReview[]> {
+    console.log('[KlantenvertellenAPI] Fetching all reviews...');
     const companies = await this.fetchCompanies();
     const allReviews: KlantenvertellenReview[] = [];
 
@@ -120,6 +134,7 @@ export class KlantenvertellenAPI {
       }
     }
 
+    console.log(`[KlantenvertellenAPI] Total reviews fetched: ${allReviews.length}`);
     return allReviews;
   }
 

@@ -20,6 +20,7 @@ export interface SyncResult {
  * Sync data from Kiyoh
  */
 async function syncKiyoh(): Promise<{ clients: number; reviews: number; errors: string[] }> {
+  console.log('[SyncService] Starting Kiyoh sync...');
   const errors: string[] = [];
   let clientsCount = 0;
   let reviewsCount = 0;
@@ -29,6 +30,7 @@ async function syncKiyoh(): Promise<{ clients: number; reviews: number; errors: 
     const locations = await kiyohAPI.fetchLocations();
 
     for (const location of locations) {
+      console.log(`[SyncService] Processing Kiyoh location: ${location.locationId} - ${location.name}`);
       try {
         // Upsert client
         const client = await prisma.client.upsert({
@@ -83,7 +85,9 @@ async function syncKiyoh(): Promise<{ clients: number; reviews: number; errors: 
 
             reviewsCount++;
           } catch (error: any) {
-            errors.push(`Failed to sync Kiyoh review ${review.reviewId}: ${error.message}`);
+            const msg = `Failed to sync Kiyoh review ${review.reviewId}: ${error.message}`;
+            console.error(msg);
+            errors.push(msg);
           }
         }
 
@@ -92,13 +96,18 @@ async function syncKiyoh(): Promise<{ clients: number; reviews: number; errors: 
         await createMetricSnapshot(client.id);
 
       } catch (error: any) {
-        errors.push(`Failed to sync Kiyoh location ${location.locationId}: ${error.message}`);
+        const msg = `Failed to sync Kiyoh location ${location.locationId}: ${error.message}`;
+        console.error(msg);
+        errors.push(msg);
       }
     }
   } catch (error: any) {
-    errors.push(`Failed to fetch Kiyoh locations: ${error.message}`);
+    const msg = `Failed to fetch Kiyoh locations: ${error.message}`;
+    console.error(msg);
+    errors.push(msg);
   }
 
+  console.log(`[SyncService] Kiyoh sync complete. Clients: ${clientsCount}, Reviews: ${reviewsCount}, Errors: ${errors.length}`);
   return { clients: clientsCount, reviews: reviewsCount, errors };
 }
 
@@ -106,6 +115,7 @@ async function syncKiyoh(): Promise<{ clients: number; reviews: number; errors: 
  * Sync data from Klantenvertellen
  */
 async function syncKlantenvertellen(): Promise<{ clients: number; reviews: number; errors: string[] }> {
+  console.log('[SyncService] Starting Klantenvertellen sync...');
   const errors: string[] = [];
   let clientsCount = 0;
   let reviewsCount = 0;
@@ -115,6 +125,7 @@ async function syncKlantenvertellen(): Promise<{ clients: number; reviews: numbe
     const companies = await klantenvertellenAPI.fetchCompanies();
 
     for (const company of companies) {
+      console.log(`[SyncService] Processing Klantenvertellen company: ${company.companyId} - ${company.name}`);
       try {
         // Upsert client
         const client = await prisma.client.upsert({
@@ -169,7 +180,9 @@ async function syncKlantenvertellen(): Promise<{ clients: number; reviews: numbe
 
             reviewsCount++;
           } catch (error: any) {
-            errors.push(`Failed to sync Klantenvertellen review ${review.reviewId}: ${error.message}`);
+            const msg = `Failed to sync Klantenvertellen review ${review.reviewId}: ${error.message}`;
+            console.error(msg);
+            errors.push(msg);
           }
         }
 
@@ -178,13 +191,18 @@ async function syncKlantenvertellen(): Promise<{ clients: number; reviews: numbe
         await createMetricSnapshot(client.id);
 
       } catch (error: any) {
-        errors.push(`Failed to sync Klantenvertellen company ${company.companyId}: ${error.message}`);
+        const msg = `Failed to sync Klantenvertellen company ${company.companyId}: ${error.message}`;
+        console.error(msg);
+        errors.push(msg);
       }
     }
   } catch (error: any) {
-    errors.push(`Failed to fetch Klantenvertellen companies: ${error.message}`);
+    const msg = `Failed to fetch Klantenvertellen companies: ${error.message}`;
+    console.error(msg);
+    errors.push(msg);
   }
 
+  console.log(`[SyncService] Klantenvertellen sync complete. Clients: ${clientsCount}, Reviews: ${reviewsCount}, Errors: ${errors.length}`);
   return { clients: clientsCount, reviews: reviewsCount, errors };
 }
 

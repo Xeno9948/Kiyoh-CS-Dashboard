@@ -60,6 +60,7 @@ export class KiyohAPI {
    * Fetch all locations (paginated)
    */
   async fetchLocations(): Promise<KiyohLocation[]> {
+    console.log('[KiyohAPI] Fetching locations...');
     await globalRateLimiter.acquire();
 
     try {
@@ -69,9 +70,14 @@ export class KiyohAPI {
         },
       });
 
-      return response.data.locations || [];
+      const locations = response.data.locations || [];
+      console.log(`[KiyohAPI] Fetched ${locations.length} locations`);
+      return locations;
     } catch (error: any) {
       console.error('Error fetching Kiyoh locations:', error.message);
+      if (error.response) {
+        console.error('[KiyohAPI] Error response:', JSON.stringify(error.response.data));
+      }
       throw error;
     }
   }
@@ -80,6 +86,7 @@ export class KiyohAPI {
    * Fetch reviews for a specific location
    */
   async fetchReviewsForLocation(locationId: number, since?: Date): Promise<KiyohReview[]> {
+    console.log(`[KiyohAPI] Fetching reviews for location ${locationId}...`);
     await globalRateLimiter.acquire();
 
     try {
@@ -90,15 +97,21 @@ export class KiyohAPI {
 
       if (since) {
         params.since = since.toISOString();
+        console.log(`[KiyohAPI] Filtering reviews since ${params.since}`);
       }
 
       const response = await this.getClient().get('/reviews', {
         params,
       });
 
-      return response.data.reviews || [];
+      const reviews = response.data.reviews || [];
+      console.log(`[KiyohAPI] Fetched ${reviews.length} reviews for location ${locationId}`);
+      return reviews;
     } catch (error: any) {
       console.error(`Error fetching Kiyoh reviews for location ${locationId}:`, error.message);
+      if (error.response) {
+        console.error('[KiyohAPI] Error response:', JSON.stringify(error.response.data));
+      }
       throw error;
     }
   }
@@ -107,6 +120,7 @@ export class KiyohAPI {
    * Fetch all reviews across all locations
    */
   async fetchAllReviews(since?: Date): Promise<KiyohReview[]> {
+    console.log('[KiyohAPI] Fetching all reviews...');
     const locations = await this.fetchLocations();
     const allReviews: KiyohReview[] = [];
 
@@ -120,6 +134,7 @@ export class KiyohAPI {
       }
     }
 
+    console.log(`[KiyohAPI] Total reviews fetched: ${allReviews.length}`);
     return allReviews;
   }
 
