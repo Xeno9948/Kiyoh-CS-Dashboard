@@ -9,6 +9,9 @@ import ThemeRegistry from '@/components/ThemeRegistry';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Force dynamic rendering for all pages to prevent build-time static generation
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Customer Success Dashboard',
   description: 'Monitor and analyze customer reviews from Kiyoh and Klantenvertellen',
