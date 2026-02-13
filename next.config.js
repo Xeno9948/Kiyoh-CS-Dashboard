@@ -3,13 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone',
-  // Skip static page generation during build
+  // Disable all static generation completely
   experimental: {
     ppr: false,
   },
-  // Disable all static optimization
-  skipTrailingSlashRedirect: true,
-  skipMiddlewareUrlNormalize: true,
+  // Key: Remove static export generation
+  async rewrites() {
+    return []
+  },
 }
 
 module.exports = nextConfig
