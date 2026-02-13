@@ -145,7 +145,7 @@ export default function DashboardPage() {
 
       {overview && (
         <Grid container spacing={3} mb={4}>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>

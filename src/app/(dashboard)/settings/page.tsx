@@ -112,7 +112,7 @@ export default function SettingsPage() {
             Performance Thresholds
           </Typography>
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <TextField
                 label="Good Performer Rating"
                 type="number"
@@ -125,7 +125,7 @@ export default function SettingsPage() {
                 helperText="Minimum rating for best performers"
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <TextField
                 label="Bad Performer Rating"
                 type="number"
@@ -138,7 +138,7 @@ export default function SettingsPage() {
                 helperText="Maximum rating for worst performers"
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <TextField
                 label="Minimum Reviews Required"
                 type="number"
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                 helperText="Minimum reviews to classify client"
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <TextField
                 label="Needs Attention Days"
                 type="number"
@@ -164,7 +164,7 @@ export default function SettingsPage() {
                 helperText="Days without review to flag client"
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid xs={12} md={6}>
               <TextField
                 label="Low Response Rate Threshold"
                 type="number"

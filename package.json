@@ -10,22 +10,23 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.3.7",
-    "@mui/material": "^7.3.7",
-    "@mui/x-data-grid": "^8.27.0",
-    "@prisma/client": "^7.3.0",
-    "axios": "^1.13.5",
-    "bcryptjs": "^3.0.3",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.3.0",
+    "@mui/material": "^6.3.0",
+    "@mui/x-data-grid": "^7.24.0",
+    "@prisma/client": "5.22.0",
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.4",
-    "next": "^14.2.35",
-    "next-auth": "^4.24.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "recharts": "^3.7.0",
-    "swr": "^2.4.0"
+    "next": "14.2.35",
+    "next-auth": "^4.24.11",
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^2.14.1",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -34,7 +35,7 @@
     "@types/react-dom": "^18.2.18",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.2.35",
-    "prisma": "^7.3.0",
+    "prisma": "5.22.0",
     "typescript": "^5.3.3"
   }
 }
